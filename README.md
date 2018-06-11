@@ -1,3 +1,3 @@
 # 👀 clojure-ref
 
-My Clojure refrence/notes
+My Clojure reference/notes
