@@ -2,116 +2,7 @@
   (require [clojure.string :as str])
   (:gen-class))
 
-; ATOMS
-;
-(defn atom-ex
-  [x]
-  (def atomEx (atom x))
-  (add-watch atomEx :wather
-             (fn [key atom old-state new-state]
-               (println "atomEx changed from " old-state " to " new-state)))
-  (println "1st x" @atomEx)
-  (reset! atomEx 10)
-  (println "2nd x" @atomEx)
-  (swap! atomEx inc)
-  (println "Increment x" @atomEx))
-
-;
-; AGENTS
-;
-(defn agent-ex
-  []
-  (def tickets-sold (agent 0))
-  (send tickets-sold + 15)
-  (await-for 100 tickets-sold)
-  (println "Tickets sold: " @tickets-sold)
-
-  ; shutdown agents
-  (shutdown-agents))
-
-;
-; FUNCTIONS
-;
-
-(defn say-hello
-  "Receives a name with 1 parameter and responds"
-  [name]
-  (println "Hello again" name "!"))
-
-(defn get-sum
-  "Sums 2 numbers"
-  [x y]
-  (+ x y))
-
-; Returns a sum depending of the n of args
-(defn get-sum-more
-  ([x y z]
-   (+ x y z))
-
-  ([x y]
-   (+ x y)))
-
-(defn hello-you
-  [name]
-  (str "Hello " name))
-
-(defn hello-all
-  [& names]
-  (map hello-you names))
-
-;
-; LOGICAL (and or not) & RELATIONAL (= not= <) OPERATORS
-;
-
-(defn can-vote
-  [age]
-  (if (>= age 18)
-    (println "You can vote!")
-    ; else
-    (println "You can't vote :(")))
-
-(defn can-do-more
-  [age]
-  (if (>= age 18)
-    (do (println "You can drive")
-        (println "You can Vote"))
-    (println "You can't vote")))
-
-(defn when-ex
-  [tof] ; true or false
-  (when tof
-    (println "1st thing")
-    (println "2nd thing")))
-
-(defn what-grade
-  [n]
-  (cond
-    (< n 6) (println "Preschool")
-    (= n 6) (println "Kindergarten")
-    (and (> n 6) (<= n 18)) (println (format "Go to grade %d" (- n 5)))
-    :else (println "Go to College!")))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; LOOPS
-;
-(defn one-to-x
-  [x]
-  (def i (atom 1))
-  (while (<= @i x)
-    (do
-      (println @i)
-
-      ; swap! currentValue nextValue
-      (swap! i inc))))
-
-(defn double-to-x
-  [x]
-  (dotimes [i x]
-    (println(* i 2))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;main
+(use 'clojure.java.io)
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -119,7 +10,8 @@
 
   ;;;;;;;;;;;;;;;;;;;;;;;
   ; STRINGS
-  ;
+  ;;;;;;;;;;;;;;;;;;;
+
   (println "\nStrings:")
 
   (def str1 "This is my string")
@@ -149,7 +41,8 @@
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; LISTS
-  ;
+  ;;;;;;;;;;;;;;;;;;;
+
   (println "\nLists:")
 
   (println (list "Cat" 1 5.666 true))
@@ -170,7 +63,8 @@
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; SETS
   ; Are lists of unique values
-  ;
+  ;;;;;;;;;;;;;;;;;;;
+
   (println "\nSets:")
 
   ; Only shows unique
@@ -190,7 +84,8 @@
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;VECTORS
-  ;
+  ;;;;;;;;;;;;;;;;;;;
+
   (println "\nVectors:")
 
   ; index of
@@ -207,48 +102,102 @@
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; MAPS
-  ;
+  ;;;;;;;;;;;;;;;;;;;
+
   (println "\nMaps:")
 
   ; hash-map
   (println "hash-map," (hash-map "Name" "Simeon" "Age" 27))
 
-; sorted-map
+  ; sorted-map
   (println "sorted-map," (sorted-map 5 12 7 "simeon" 3 "Banana"))
 
-; Get the value of a key
+  ; Get the value of a key
   (println "get," (get (hash-map "name" "Simeon" "age" 27) "age"))
 
-; Find the key and value
+  ; Find the key and value
   (println "find," (find (hash-map "name" "Simeon" "age" 27) "age"))
 
-; Does it contain?
+  ; Does it contain?
   (println "contains?," (contains? (hash-map "name" "Simeon" "age" 27) "age"))
 
-; Get a list of keys
+  ; Get a list of keys
   (println "keys," (keys (hash-map "name" "Simeon" "age" 27)))
 
-; Get the values
+  ; Get the values
   (println "vals," (vals (hash-map "name" "Simeon" "age" 27)))
 
-; Merge maps
+  ; Merge maps
   (println "merge-with," (merge-with + (hash-map "name" "Simeon" "age" 27) (hash-map "address" "helsinki")))
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (println "\nFunctions:")
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ; ATOMS
+  ;;;;;;;;;;;;;;;;;;;
+
+
+  (defn atom-ex
+    [x]
+    (def atomEx (atom x))
+    (add-watch atomEx :wather
+               (fn [key atom old-state new-state]
+                 (println "atomEx changed from " old-state " to " new-state)))
+    (println "1st x" @atomEx)
+    (reset! atomEx 10)
+    (println "2nd x" @atomEx)
+    (swap! atomEx inc)
+    (println "Increment x" @atomEx))
+
   ; 1st x 5)
   ; atomEx changed from  5  to  10
   ; 2nd x 10
   ; atomEx changed from  10  to  11
   (atom-ex 5)
 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ; AGENTS
+  ;;;;;;;;;;;;;;;;;;;
+
+  (defn agent-ex
+    []
+    (def tickets-sold (agent 0))
+    (send tickets-sold + 15)
+    (await-for 100 tickets-sold)
+    (println "Tickets sold: " @tickets-sold)
+
+  ; shutdown agents
+    (shutdown-agents))
+
   ; Tickets sold:  15
   (agent-ex)
 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ; FUNCTIONS
+  ;;;;;;;;;;;;;;;;;;;
+
+  (println "\nFunctions:")
+
+  (defn say-hello
+    "Receives a name with 1 parameter and responds"
+    [name]
+    (println "Hello again" name "!"))
+
   (say-hello "Simeon")
+
+  (defn get-sum
+    "Sums 2 numbers"
+    [x y]
+    (+ x y))
 
   ; 3
   (println (get-sum 1 2))
+
+  ; Returns a sum depending of the n of args
+  (defn get-sum-more
+    ([x y z]
+     (+ x y z))
+
+    ([x y]
+     (+ x y)))
 
   ; 3
   (println (get-sum-more 1 1 1))
@@ -256,34 +205,165 @@
   ; 2
   (println (get-sum-more 1 1))
 
+  (defn hello-you
+    [name]
+    (str "Hello " name))
+
   ; Hello Me!
   (println (hello-you "Me!"))
+
+  (defn hello-all
+    [& names]
+    (map hello-you names))
 
   ; (Hello Doug Hello Mary Hello James)
   (println (hello-all "Doug" "Mary" "James"))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ; CONDITIONALS
+  ; LOGICAL (and or not) & RELATIONAL (= not= <) OPERATORS
+  ;;;;;;;;;;;;;;;;;;;
 
   (println "\nConditionals:")
+
+  (defn can-vote
+    [age]
+    (if (>= age 18)
+      (println "You can vote!")
+      ; else
+      (println "You can't vote :(")))
+
   ; You can vote!
   (println (can-vote 19))
+
+  (defn can-do-more
+    [age]
+    (if (>= age 18)
+      (do (println "You can drive")
+          (println "You can Vote"))
+      (println "You can't vote")))
 
   ; You can drive)
   ; You can Vote
   (println (can-do-more 18))
 
+  (defn when-ex
+    [tof] ; true or false
+    (when tof
+      (println "1st thing")
+      (println "2nd thing")))
+
   (when-ex true)
+
+  (defn what-grade
+    [n]
+    (cond
+      (< n 6) (println "Preschool")
+      (= n 6) (println "Kindergarten")
+      (and (> n 6) (<= n 18)) (println (format "Go to grade %d" (- n 5)))
+      :else (println "Go to College!")))
 
   (what-grade 18)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; LOOPS
+  ;;;;;;;;;;;;;;;;;;;
+
   (println "\nLoops:")
 
-  ; 1 2 3
-  (one-to-x 3)
-  (println)
+  (defn one-to-x
+    [x]
+    (def i (atom 1))
+    (while (<= @i x)
+      (do
+        (println @i)
 
+        ; swap! currentValue nextValue
+        (swap! i inc))))
+
+  (println "one-to-x")
+  ; 1 2 3
+  (one-to-x 3) (defn double-to-x
+                 [x]
+                 (dotimes [i x]
+                   (println (* i 2))))
+
+  (println "double-to-x")
   ; 0 2 4 6
-  (double-to-x 4))
+  (double-to-x 4) (defn triple-to-x
+                    "Tripple everything from x to y"
+                    [x y]
+                    (loop [i x]
+                      (when (<= i y)
+                        (println (* i 3))
+                        (recur (+ i 1)))))
+
+  (println "triple-to-x")
+  ; 3 6 9 12 15
+  (triple-to-x 1 5)
+
+  (defn print-list
+    "Prints a list of numbers"
+    [& nums] ; & when receiving a list of items
+    (doseq [x nums]
+      (println x)))
+
+  (println "print-list")
+  (print-list 7 8 9)
+
+  ;;;;;;;;;;;;;;;;;;;;
+  ; FILE I/O
+  ;;;;;;;;;;;;;;;;;;;
+  (println "\nI/O:")
+
+  (defn write-to-file
+    [file text]
+    (with-open [wrtr (writer file)]
+      (.write wrtr text)))
+
+  ; write
+  (write-to-file "test.txt" "this is text\n")
+
+  (defn read-from-file
+    [file]
+    (try
+      (println (slurp file))
+      (catch Exception e (println "Error : " (.getMessage e)))))
+
+  ; this is text
+  (read-from-file "test.txt")
+
+  (defn append-to-file
+    [file text]
+    ; mark append as true
+    (with-open [wrtr (writer file :append true)]
+                (.write wrtr text)))
+
+  ; append
+  (append-to-file "test.txt" "another line\n")
+
+  (defn read-line-from-file
+    [file]
+    (with-open [rdr (reader file)]
+      (doseq [line (line-seq rdr)]
+        (println line))))
+
+  ; read-line
+  (println "read-line-from-file:")
+  (read-line-from-file "test.txt")
+
+  ;;;;;;;;;;;;;;;;;;;;
+  ; DESTRUCTURING
+  ;;;;;;;;;;;;;;;;;;;
+  (println "\nDestruct:")
+
+  (defn destruct
+    []
+    (def vectVals [1 2 3 4])
+    (let [[one two & the-rest] vectVals] ; get the rest from vectVals
+      ; w/o apply => 1 2 (3 4)
+      (apply println one two the-rest)))
+
+  ; 1 2 3 4
+  (destruct)
+
+)
