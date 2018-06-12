@@ -4,6 +4,27 @@
 
 (use 'clojure.java.io)
 
+(defmacro discount
+  ([cond dis1 dis2]
+   ; Syntax quoting `
+   ; Dont evaluate, just return the if statement
+   (list `if cond dis1 dis2)))
+
+(defmacro reg-math
+  [calc]
+  ; (+ 1 2) => (1 + 2)
+  (list (second calc) (first calc) (nth calc 2)))
+
+(defmacro do-more
+  [cond & body]
+  ; if conditions are met, executes all args
+  (list `if cond (cons 'do body)))
+
+(defmacro do-more-2
+  [cond & body]
+  ; Don't evaluate if, but evaluate cond
+  `(if ~cond (do ~@body )))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
@@ -289,13 +310,15 @@
 
   (println "double-to-x")
   ; 0 2 4 6
-  (double-to-x 4) (defn triple-to-x
-                    "Tripple everything from x to y"
-                    [x y]
-                    (loop [i x]
-                      (when (<= i y)
-                        (println (* i 3))
-                        (recur (+ i 1)))))
+  (double-to-x 4)
+
+  (defn triple-to-x
+    "Tripple everything from x to y"
+    [x y]
+    (loop [i x]
+      (when (<= i y)
+        (println (* i 3))
+        (recur (+ i 1)))))
 
   (println "triple-to-x")
   ; 3 6 9 12 15
@@ -332,14 +355,14 @@
   ; this is text
   (read-from-file "test.txt")
 
-  (defn append-to-file
-    [file text]
-    ; mark append as true
-    (with-open [wrtr (writer file :append true)]
-                (.write wrtr text)))
-
-  ; append
-  (append-to-file "test.txt" "another line\n")
+  ; (defn append-to-file
+  ;   [file text]
+  ;   ; mark append as true
+  ;   (with-open [wrtr (writer file :append true)
+  ;               (.write wrtr text)]))
+  ;
+  ; ; append
+  ; (append-to-file "test.txt" "another line\n")
 
   (defn read-line-from-file
     [file]
@@ -366,4 +389,98 @@
   ; 1 2 3 4
   (destruct)
 
-)
+  ;;;;;;;;;;;;;;;;;;;;
+  ; STRUCT MAPS
+  ;;;;;;;;;;;;;;;;;;;
+  (println "\nStruct Maps:")
+
+  (defn struct-map-ex
+    []
+    (defstruct Customer :Name :Phone)
+    (def cust1 (struct Customer "Doug" "0401234567"))
+    (def cust2 (struct-map Customer :Name "Sally" :Phone "0504567890"))
+    (println "cust1:" cust1)
+    (println "cust2:" (:Name cust2)))
+
+  ; cust1: {:Name Doug, :Phone 0401234567})
+  ; cust2: Sally
+  (struct-map-ex)
+
+  ;;;;;;;;;;;;;;;;;;;;
+  ; ANONYMOUS FUNCTIONS
+  ;;;;;;;;;;;;;;;;;;;
+  (println "\nAnonymous functions:")
+
+  ; (range 1 to 4) == [1 2 3]
+  (println
+   (map (fn [x] (* x x)) (range 1 4)))
+  ; => (1 4 9)
+
+  ; Compact Anonymous Function
+  ; the number of args depends on how many % you have in the body
+  (println
+   (map #(* % 3) (range 1 4)))
+  ; => (3 6 9)
+
+  (println
+   (#(* %1 %2) 2 3))
+  ; => 6
+
+
+  ;;;;;;;;;;;;;;;;;;;;
+  ; Clojures
+  ;;;;;;;;;;;;;;;;;;;
+  (println "\nClojures:"
+
+  ; Used to return custom functions
+
+  ; define custom function
+           (defn custom-multiplier
+             [mult-by]
+             #(* % mult-by)))
+
+  ; Assign
+  (def mult-by-4 (custom-multiplier 4))
+
+  ; Call
+  (println (mult-by-4 2))
+
+  ;;;;;;;;;;;;;;;;;;;;
+  ; Filtering Lists
+  ;;;;;;;;;;;;;;;;;;;
+  (println "\nFiltering Lists:")
+
+  (println
+   (take 2 [1 2 3])) ; (1 2)
+
+  (println
+   (drop 2 [1 2 3])) ; (3)
+
+  ; Removes negs only until sees positive
+  (println
+   (take-while neg? [-1 0 66 -18])) ; (-1)
+
+  (println
+   (drop-while neg? [-2 -1 1 2 -3 4])) ; (1 2 -3 4)
+
+  ; Print everything > 2
+  (println
+   (filter #(> % 2) [1 2 3 4])) ; (3 4)
+
+  ;;;;;;;;;;;;;;;;;;;;
+  ; Macros
+  ;;;;;;;;;;;;;;;;;;;
+  (println "\nMacros:")
+
+  ; if over 65, get 10% OFF
+  (discount (> 25 65) (println "10% off")
+            (println "Full Price"))
+
+  (println (reg-math (1 + 2)))
+
+  (do-more (< 1 2 ) (println "Hello")
+           (println "Hello again"))
+
+  (do-more-2 (< 1 2)
+             (println "hello-2")
+             (println "again-2")))
